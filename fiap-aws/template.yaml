@@ -1,0 +1,137 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    fiap-aws
+Globals:
+    Function:
+        Timeout: 20
+        MemorySize: 512
+        Environment:
+          Variables:
+            TABLE_NAME: !Ref TripTable
+            ENDPOINT_OVERRIDE: ""
+
+Resources:
+
+  CreateTripRecordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+     CodeUri: target/fiap-aws-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+     Handler: com.fiap.aws.handler.CreateTripRecord::handleRequest
+     Runtime: java8
+     Policies:
+       - DynamoDBCrudPolicy:
+           TableName: !Ref TripTable   
+     Events:
+       CreateTripRecord:
+         Type: Api
+         Properties:
+           Path: /trip
+           Method: post
+           
+  GetTripRecordsByPeriodFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+     CodeUri: target/fiap-aws-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+     Handler: com.fiap.aws.handler.GetTripRecordsByPeriod::handleRequest
+     Runtime: java8
+     Policies:
+       - DynamoDBCrudPolicy:
+           TableName: !Ref TripTable   
+     Events:
+       GetTripRecordsByPeriod:
+         Type: Api
+         Properties:
+           Path: /trip
+           Method: get
+           RequestParameters:
+              - method.request.querystring.start
+              - method.request.querystring.end            
+  GetTripRecordsByCountryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+     CodeUri: target/fiap-aws-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+     Handler: com.fiap.aws.handler.GetTripRecordsCountry::handleRequest
+     Runtime: java8
+     Policies:
+       - DynamoDBCrudPolicy:
+           TableName: !Ref TripTable
+     Events:
+       GetTripRecordsByCountry:
+         Type: Api
+         Properties:
+           Path: /trip/{country}
+           Method: get
+           RequestParameters:
+              - method.request.querystring.country
+  GetTripRecordsByCityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+     CodeUri: target/fiap-aws-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+     Handler: com.fiap.aws.handler.GetStudyRecordsByIsConsumed::handleRequest
+     Runtime: java8
+     Policies:
+       - DynamoDBCrudPolicy:
+           TableName: !Ref TripTable
+     Events:
+       GetTripRecordsByCity:
+         Type: Api
+         Properties:
+           Path: /trip/{country}
+           Method: get
+           RequestParameters:
+              - method.request.querystring.isconsumed
+          Trip:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: study
+      AttributeDefinitions:
+        - AttributeName: topic
+          AttributeType: S
+        - AttributeName: dateTimeCreation
+          AttributeType: S
+        - AttributeName: tag
+          AttributeType: S
+        - AttributeName: consumed
+          AttributeType: S            
+      KeySchema:
+        - AttributeName: topic
+          KeyType: HASH
+        - AttributeName: dateTimeCreation
+          KeyType: RANGE
+      LocalSecondaryIndexes: 
+        - IndexName: tagIndex
+          KeySchema: 
+            - AttributeName: topic
+              KeyType: HASH
+            - AttributeName: tag
+              KeyType: RANGE
+          Projection:
+             ProjectionType: ALL 
+        - IndexName: consumedIndex
+          KeySchema: 
+            - AttributeName: topic
+              KeyType: HASH
+            - AttributeName: consumed
+              KeyType: RANGE
+          Projection:
+             ProjectionType: ALL      
+      BillingMode: PAY_PER_REQUEST              
+
+Outputs:
+    CreateTripRecordFunction:
+      Description: "CreateTripRecord Lambda Function ARN"
+      Value: !GetAtt CreateTripRecordFunction.Arn
+      
+    GetTripRecordsByPeriodFunction:
+      Description: "GetStudyRecordsByPeriod Lambda Function ARN"
+      Value: !GetAtt GetStudyRecordsByPeriodFunction.Arn
+      
+    GetTripRecordsByCountryFunction:
+      Description: "GetStudyRecordsByTag Lambda Function ARN"
+      Value: !GetAtt GetStudyRecordsByTagFunction.Arn
+      
+    GetTripRecordsByCityFunction:
+      Description: "GetStudyRecordsByIsConsumed Lambda Function ARN"
+      Value: !GetAtt GetStudyRecordsByIsConsumedFunction.Arn      
+     
