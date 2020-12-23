@@ -1,0 +1,18 @@
+{
+	"CreateTripRecordFunction": {
+		"ENDPOINT_OVERRIDE": "http://localhost:8000",
+		"TABLE_NAME": "trip"
+	},
+	"GetTripRecordsByPeriodFunction": {
+		"ENDPOINT_OVERRIDE": "http://localhost:8000",
+		"TABLE_NAME": "trip"
+	},
+	"GetTripRecordsByCountryFunction": {
+		"ENDPOINT_OVERRIDE": "http://localhost:8000",
+		"TABLE_NAME": "trip"
+	},
+	"GetTripRecordsByCityFunction": {
+		"ENDPOINT_OVERRIDE": "http://localhost:8000",
+		"TABLE_NAME": "trip"
+	}
+}

@@ -16,7 +16,7 @@ Resources:
   CreateTripRecordFunction:
     Type: AWS::Serverless::Function
     Properties:
-     CodeUri: target/fiap-aws-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+     CodeUri: target/fiap-aws-1.0-SNAPSHOT-jar-with-dependencies.jar
      Handler: com.fiap.aws.handler.CreateTripRecord::handleRequest
      Runtime: java8
      Policies:
@@ -32,7 +32,7 @@ Resources:
   GetTripRecordsByPeriodFunction:
     Type: AWS::Serverless::Function
     Properties:
-     CodeUri: target/fiap-aws-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+     CodeUri: target/fiap-aws-1.0-SNAPSHOT-jar-with-dependencies.jar
      Handler: com.fiap.aws.handler.GetTripRecordsByPeriod::handleRequest
      Runtime: java8
      Policies:
@@ -50,7 +50,7 @@ Resources:
   GetTripRecordsByCountryFunction:
     Type: AWS::Serverless::Function
     Properties:
-     CodeUri: target/fiap-aws-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+     CodeUri: target/fiap-aws-1.0-SNAPSHOT-jar-with-dependencies.jar
      Handler: com.fiap.aws.handler.GetTripRecordsCountry::handleRequest
      Runtime: java8
      Policies:
@@ -67,52 +67,61 @@ Resources:
   GetTripRecordsByCityFunction:
     Type: AWS::Serverless::Function
     Properties:
-     CodeUri: target/fiap-aws-1.0.0-SNAPSHOT-jar-with-dependencies.jar
-     Handler: com.fiap.aws.handler.GetStudyRecordsByIsConsumed::handleRequest
+     CodeUri: target/fiap-aws-1.0-SNAPSHOT-jar-with-dependencies.jar
+     Handler: com.fiap.aws.handler.GetTripRecordsByCountry::handleRequest
      Runtime: java8
      Policies:
        - DynamoDBCrudPolicy:
            TableName: !Ref TripTable
      Events:
-       GetTripRecordsByCity:
+       GetTripRecordsByCountry:
          Type: Api
          Properties:
            Path: /trip/{country}
            Method: get
            RequestParameters:
-              - method.request.querystring.isconsumed
-          Trip:
+              - method.request.querystring.country
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: study
+      TableName: trip
       AttributeDefinitions:
-        - AttributeName: topic
+        - AttributeName: trip
           AttributeType: S
-        - AttributeName: dateTimeCreation
+        - AttributeName: date
           AttributeType: S
-        - AttributeName: tag
+        - AttributeName: city
           AttributeType: S
-        - AttributeName: consumed
+        - AttributeName: country
+          AttributeType: S      
+        - AttributeName: reason
           AttributeType: S            
       KeySchema:
-        - AttributeName: topic
+        - AttributeName: trip
           KeyType: HASH
-        - AttributeName: dateTimeCreation
+        - AttributeName: date
           KeyType: RANGE
       LocalSecondaryIndexes: 
-        - IndexName: tagIndex
+        - IndexName: countryIndex
           KeySchema: 
-            - AttributeName: topic
+            - AttributeName: trip
               KeyType: HASH
-            - AttributeName: tag
+            - AttributeName: country
               KeyType: RANGE
           Projection:
              ProjectionType: ALL 
-        - IndexName: consumedIndex
+        - IndexName: cityIndex
           KeySchema: 
-            - AttributeName: topic
+            - AttributeName: trip
               KeyType: HASH
-            - AttributeName: consumed
+            - AttributeName: city
+              KeyType: RANGE
+          Projection:
+             ProjectionType: ALL      
+        - IndexName: reasonIndex
+          KeySchema: 
+            - AttributeName: trip
+              KeyType: HASH
+            - AttributeName: reason
               KeyType: RANGE
           Projection:
              ProjectionType: ALL      
@@ -124,14 +133,13 @@ Outputs:
       Value: !GetAtt CreateTripRecordFunction.Arn
       
     GetTripRecordsByPeriodFunction:
-      Description: "GetStudyRecordsByPeriod Lambda Function ARN"
-      Value: !GetAtt GetStudyRecordsByPeriodFunction.Arn
+      Description: "GetTripRecordsByPeriod Lambda Function ARN"
+      Value: !GetAtt GetTripRecordsByPeriodFunction.Arn
       
     GetTripRecordsByCountryFunction:
-      Description: "GetStudyRecordsByTag Lambda Function ARN"
-      Value: !GetAtt GetStudyRecordsByTagFunction.Arn
+      Description: "GetTripRecordsByCountry Lambda Function ARN"
+      Value: !GetAtt GetTripRecordsByCountryFunction.Arn
       
     GetTripRecordsByCityFunction:
-      Description: "GetStudyRecordsByIsConsumed Lambda Function ARN"
-      Value: !GetAtt GetStudyRecordsByIsConsumedFunction.Arn      
-     
+      Description: "GetTripRecordsByCity Lambda Function ARN"
+      Value: !GetAtt GetTripRecordsByCityFunction.Arn      
