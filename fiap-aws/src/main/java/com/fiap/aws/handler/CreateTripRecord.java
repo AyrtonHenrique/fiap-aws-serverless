@@ -25,8 +25,14 @@ public class CreateTripRecord implements RequestHandler<HandlerRequest, HandlerR
 			return HandlerResponse.builder().setStatusCode(400).setRawBody("deu ruim na trip!").build();
 		}
 		context.getLogger().log("Criando a sua trip " + trip.toString());
-
-		final Trip tripRecorded = repository.save(trip);
+		context.getLogger().log("variavel banco de dados:" + System.getenv("ENDPOINT_OVERRIDE"));
+		Trip tripRecorded;
+		try {
+			tripRecorded = repository.save(trip, context);
+		} catch (Exception e) {
+			//TODO: handle exception
+			return HandlerResponse.builder().setStatusCode(400).setRawBody("deu ruiiiiiiim na trip!").build();
+		}
 
 		return HandlerResponse.builder().setStatusCode(201).setObjectBody(tripRecorded).build();
 	}

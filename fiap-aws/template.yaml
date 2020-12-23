@@ -64,23 +64,7 @@ Resources:
            Method: get
            RequestParameters:
               - method.request.querystring.country
-  GetTripRecordsByCityFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-     CodeUri: target/fiap-aws-1.0-SNAPSHOT-jar-with-dependencies.jar
-     Handler: com.fiap.aws.handler.GetTripRecordsByCountry::handleRequest
-     Runtime: java8
-     Policies:
-       - DynamoDBCrudPolicy:
-           TableName: !Ref TripTable
-     Events:
-       GetTripRecordsByCountry:
-         Type: Api
-         Properties:
-           Path: /trip/{country}
-           Method: get
-           RequestParameters:
-              - method.request.querystring.country
+  TripTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: trip
@@ -139,7 +123,4 @@ Outputs:
     GetTripRecordsByCountryFunction:
       Description: "GetTripRecordsByCountry Lambda Function ARN"
       Value: !GetAtt GetTripRecordsByCountryFunction.Arn
-      
-    GetTripRecordsByCityFunction:
-      Description: "GetTripRecordsByCity Lambda Function ARN"
-      Value: !GetAtt GetTripRecordsByCityFunction.Arn      
+    

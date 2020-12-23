@@ -7,30 +7,36 @@ import java.util.Map;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.lambda.runtime.Context;
 import com.fiap.aws.model.Trip;
 
 public class TripRepository {
 
 	private static final DynamoDBMapper mapper = DynamoDBManager.mapper();
 
-	public Trip save(final Trip study) {
-		mapper.save(study);
-		return study;
+	public Trip save(final Trip trip,final Context context) {
+		context.getLogger().log("salvando");
+		mapper.save(trip);
+		context.getLogger().log("salvo");
+		return trip;
 	}
 
-	public List<Trip> findByPeriod(final String starts, final String ends) {
+	public List<Trip> findByPeriod(final String starts, final String ends, final Context context) {
 
 		final Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
 		// eav.put(":val1", new AttributeValue().withS(trip));
 		eav.put(":val1", new AttributeValue().withS(starts));
 		eav.put(":val2", new AttributeValue().withS(ends));
-
+		
+		context.getLogger().log("INICIANDO BUCAs DYNAMO DB");
+		
 		final DynamoDBQueryExpression<Trip> queryExpression = new DynamoDBQueryExpression<Trip>()
 				.withKeyConditionExpression("dateTimeCreation between :val1 and :val2")
 				.withExpressionAttributeValues(eav);
 
 		final List<Trip> trips = mapper.query(Trip.class, queryExpression);
 
+		context.getLogger().log("finalizando BUsCA DYNAMO DB");
 		return trips;
 	}
 

@@ -9,12 +9,10 @@ import com.fiap.aws.model.HandlerRequest;
 import com.fiap.aws.model.HandlerResponse;
 import com.fiap.aws.model.Trip;
 
-
-
 public class GetTripRecordsByPeriod implements RequestHandler<HandlerRequest, HandlerResponse> {
 
 	private final TripRepository repository = new TripRepository();
-	
+
 	@Override
 	public HandlerResponse handleRequest(HandlerRequest request, Context context) {
 
@@ -24,12 +22,12 @@ public class GetTripRecordsByPeriod implements RequestHandler<HandlerRequest, Ha
 
 		context.getLogger().log("Procurando por trip  entre " + starts + " e " + ends);
 
-		final List<Trip> trips = this.repository.findByPeriod(starts, ends);
-		
-		if(trips == null || trips.isEmpty()) {
+		final List<Trip> trips = this.repository.findByPeriod(starts, ends, context);
+
+		if (trips == null || trips.isEmpty()) {
 			return HandlerResponse.builder().setStatusCode(404).build();
 		}
-		
+
 		return HandlerResponse.builder().setStatusCode(200).setObjectBody(trips).build();
 	}
 }
