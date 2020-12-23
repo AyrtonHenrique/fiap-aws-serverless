@@ -16,7 +16,7 @@ Resources:
   CreateTripRecordFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://trip-ayrton-fiap/e57f1dc53720c678b126cb41d7b4cd9a
+      CodeUri: s3://trip-ayrton-fiap/19ea087eb708067dbdcfebc3f0526aba
       Handler: com.fiap.aws.handler.CreateTripRecord::handleRequest
       Runtime: java8
       Policies:
@@ -32,7 +32,7 @@ Resources:
   GetTripRecordsByPeriodFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://trip-ayrton-fiap/e57f1dc53720c678b126cb41d7b4cd9a
+      CodeUri: s3://trip-ayrton-fiap/19ea087eb708067dbdcfebc3f0526aba
       Handler: com.fiap.aws.handler.GetTripRecordsByPeriod::handleRequest
       Runtime: java8
       Policies:
@@ -51,7 +51,7 @@ Resources:
   GetTripRecordsByCountryFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://trip-ayrton-fiap/e57f1dc53720c678b126cb41d7b4cd9a
+      CodeUri: s3://trip-ayrton-fiap/19ea087eb708067dbdcfebc3f0526aba
       Handler: com.fiap.aws.handler.GetTripRecordsByCountry::handleRequest
       Runtime: java8
       Policies:
