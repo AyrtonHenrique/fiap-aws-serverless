@@ -51,7 +51,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
      CodeUri: target/fiap-aws-1.0-SNAPSHOT-jar-with-dependencies.jar
-     Handler: com.fiap.aws.handler.GetTripRecordsCountry::handleRequest
+     Handler: com.fiap.aws.handler.GetTripRecordsByCountry::handleRequest
      Runtime: java8
      Policies:
        - DynamoDBCrudPolicy:
@@ -63,7 +63,7 @@ Resources:
            Path: /trip/{country}
            Method: get
            RequestParameters:
-              - method.request.querystring.country
+              - method.request.querystring.city
   TripTable:
     Type: AWS::DynamoDB::Table
     Properties:

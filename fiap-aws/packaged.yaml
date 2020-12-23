@@ -16,7 +16,7 @@ Resources:
   CreateTripRecordFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://trip-ayrton-fiap/7edd6680eaafeac7e7b9e44d6a33f67d
+      CodeUri: s3://trip-ayrton-fiap/e57f1dc53720c678b126cb41d7b4cd9a
       Handler: com.fiap.aws.handler.CreateTripRecord::handleRequest
       Runtime: java8
       Policies:
@@ -32,7 +32,7 @@ Resources:
   GetTripRecordsByPeriodFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://trip-ayrton-fiap/7edd6680eaafeac7e7b9e44d6a33f67d
+      CodeUri: s3://trip-ayrton-fiap/e57f1dc53720c678b126cb41d7b4cd9a
       Handler: com.fiap.aws.handler.GetTripRecordsByPeriod::handleRequest
       Runtime: java8
       Policies:
@@ -51,8 +51,8 @@ Resources:
   GetTripRecordsByCountryFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://trip-ayrton-fiap/7edd6680eaafeac7e7b9e44d6a33f67d
-      Handler: com.fiap.aws.handler.GetTripRecordsCountry::handleRequest
+      CodeUri: s3://trip-ayrton-fiap/e57f1dc53720c678b126cb41d7b4cd9a
+      Handler: com.fiap.aws.handler.GetTripRecordsByCountry::handleRequest
       Runtime: java8
       Policies:
       - DynamoDBCrudPolicy:
@@ -65,7 +65,7 @@ Resources:
             Path: /trip/{country}
             Method: get
             RequestParameters:
-            - method.request.querystring.country
+            - method.request.querystring.city
   TripTable:
     Type: AWS::DynamoDB::Table
     Properties:

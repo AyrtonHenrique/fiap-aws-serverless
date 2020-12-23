@@ -18,12 +18,20 @@ public class GetTripRecordsByCountry implements RequestHandler<HandlerRequest, H
 	public HandlerResponse handleRequest(HandlerRequest request, Context context) {
 
 		// final String topic = request.getPathParameters().get("topic");
-		//context.getLogger().log("Searching for registered studies for " + topic + " and tag equals " + tag);
+		// context.getLogger().log("Searching for registered studies for " + topic + "
+		// and tag equals " + tag);
+		//
+		final String country = request.getPathParameters().get("country");
+		String city;
+		try{
+			city = request.getQueryStringParameters().get("city");
+
+		}catch(Exception e){
+			city ="";
+		}
 		
-		final String country = request.getQueryStringParameters().get("country");
-
-
-		final List<Trip> trips = this.repository.findByCountry(country);
+		List<Trip> trips = city != "" ? this.repository.findByCity(country, city)
+				: this.repository.findByCountry(country);
 
 		if (trips == null || trips.isEmpty()) {
 			return HandlerResponse.builder().setStatusCode(404).build();
