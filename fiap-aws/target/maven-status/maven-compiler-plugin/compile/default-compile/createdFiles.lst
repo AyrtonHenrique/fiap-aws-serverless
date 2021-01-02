@@ -1,0 +1,11 @@
+com\fiap\aws\handler\GetTripRecordsByPeriod.class
+com\fiap\aws\model\HandlerRequest.class
+com\fiap\aws\dao\DynamoDBManager.class
+com\fiap\aws\model\HandlerResponse.class
+com\fiap\aws\model\HandlerResponse$Builder.class
+com\fiap\aws\dao\TripRepository.class
+com\fiap\aws\handler\GetTripRecordsByCountry.class
+com\fiap\aws\App.class
+com\fiap\aws\handler\CreateTripRecord.class
+com\fiap\aws\model\Trip.class
+com\fiap\aws\handler\GetTripRecordsByCity.class

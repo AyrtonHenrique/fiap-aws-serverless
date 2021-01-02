@@ -1,121 +1,130 @@
-## AWS SAM Application for Managing Study Data Lake
+Trabalho final de Servless Architecture
 
-This is a sample application to demonstrate how to build an application on AWS Serverless Envinronment using the
-AWS SAM, Amazon API Gateway, AWS Lambda and Amazon DynamoDB.
-It also uses the DynamoDBMapper ORM structure to map Study items in a DynamoDB table to a RESTful API for managing Studies.
+Nome dos Integrantes do Grupo: 
+
+* Aruna Fernanda Martins   	 	    – RM 338577 
+* Ayrton Henrique Gomes Silva   	– RM 337089 
+* Carlos Eduardo Roque da Silva     – RM 338866 
+* Sara Regina Pires 	 	 		– RM 338142 
+* Willian Yoshiaki Kazahaya 	 	– RM 338950 
+
+#Fonte do Projeto
+
+`https://github.com/AyrtonHenrique/fiap-aws-serverless`  
 
 
-## Requirements
+## Aplicativo AWS SAM para Cadastara Viagens
 
-* AWS CLI already configured with at least PowerUser permission
-* [Java SE Development Kit 8 installed](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-* [Docker installed](https://www.docker.com/community-edition)
-* [Maven](https://maven.apache.org/install.html)
-* [SAM CLI](https://github.com/awslabs/aws-sam-cli)
-* [Python 3](https://docs.python.org/3/)
+Este é um exemplo de aplicativo para demonstrar como construir um aplicativo no AWS Serverless Envinronment usando o
+AWS SAM, Amazon API Gateway, AWS Lambda e Amazon DynamoDB.
+Ele também usa a estrutura ORM do DynamoDBMapper para mapear itens de vigagem(Trip) em uma tabela do DynamoDB para uma API RESTful para gerenciar Viagens.
 
-## Setup process
 
-### Installing dependencies
+## Requisitos
 
-We use `maven` to install our dependencies and package our application into a JAR file:
+* AWS CLI já configurado com pelo menos permissão PowerUser
+* [Java SE Development Kit 8 instalado] (http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+* [Docker instalado] (https://www.docker.com/community-edition)
+* [Maven] (https://maven.apache.org/install.html)
+* [SAM CLI] (https://github.com/awslabs/aws-sam-cli)
+* [Python 3] (https://docs.python.org/3/)
 
-```bash
-mvn install
-```
+## Processo de configuração
 
-### Local development
+### Instalando dependências
 
-**Invoking function locally through local API Gateway**
-1. Start DynamoDB Local in a Docker container. `docker run -p 8000:8000 -v $(pwd)/local/dynamodb:/data/ amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /data`
-2. Create the DynamoDB table. `aws dynamodb create-table --table-name study --attribute-definitions AttributeName=topic,AttributeType=S AttributeName=dateTimeCreation,AttributeType=S AttributeName=tag,AttributeType=S AttributeName=consumed,AttributeType=S --key-schema AttributeName=topic,KeyType=HASH AttributeName=dateTimeCreation,KeyType=RANGE --local-secondary-indexes 'IndexName=tagIndex,KeySchema=[{AttributeName=topic,KeyType=HASH},{AttributeName=tag,KeyType=RANGE}],Projection={ProjectionType=ALL}' 'IndexName=consumedIndex,KeySchema=[{AttributeName=topic,KeyType=HASH},{AttributeName=consumed,KeyType=RANGE}],Projection={ProjectionType=ALL}' --billing-mode PAY_PER_REQUEST --endpoint-url http://localhost:8000`
+Usamos `maven` para instalar nossas dependências e empacotar nosso aplicativo em um arquivo JAR:
 
-If the table already exist, you can delete: `aws dynamodb delete-table --table-name study --endpoint-url http://localhost:8000`
+bash 
+`mvn install`	
 
-3. Start the SAM local API.
- - On a Mac: `sam local start-api --env-vars src/test/resources/test_environment_mac.json`
- - On Windows: `sam local start-api --env-vars src/test/resources/test_environment_windows.json`
- - On Linux: `sam local start-api --env-vars src/test/resources/test_environment_linux.json`
+### Desenvolvimento local
+
+** Chamar função localmente por meio do API Gateway local **
+1. Inicie o DynamoDB Local em um contêiner do Docker. `docker run -p 8000: 8000 -v $ (pwd) / local / dynamodb: / data / amazon / dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath / data`
+2. Crie a tabela DynamoDB. `aws dynamodb create-table --table-name trip --attribute-definitions AttributeName=trip,AttributeType=S AttributeName=country,AttributeType=S AttributeName=date,AttributeType=S AttributeName=city,AttributeType=S AttributeName=reason,AttributeType=S --key-schema AttributeName=trip,KeyType=HASH AttributeName=date,KeyType=RANGE --local-secondary-indexes 'IndexName=countryIndex,KeySchema=[{AttributeName=trip,KeyType=HASH},{AttributeName=country,KeyType=RANGE}],Projection={ProjectionType=ALL}' 'IndexName=cityIndex,KeySchema=[{AttributeName=trip,KeyType=HASH},{AttributeName=city,KeyType=RANGE}],Projection={ProjectionType=ALL}' 'IndexName=reasonIndex,KeySchema=[{AttributeName=trip,KeyType=HASH},{AttributeName=reason,KeyType=RANGE}],Projection={ProjectionType=ALL}' --billing-mode PAY_PER_REQUEST  --endpoint-url http://localhost:8000`
+
+Se a tabela já existe, você pode excluir: `aws dynamodb delete-table --table-name trip --endpoint-url http: // localhost: 8000`
+
+3. Inicie a API local do SAM.
+ - Em um Mac: `sam local start-api --env-vars src / test / resources / test_environment_mac.json`
+ - No Windows: `sam local start-api --env-vars src / test / resources / test_environment_windows.json`
+ - No Linux: `sam local start-api --env-vars src / test / resources / test_environment_linux.json`
  
- OBS:  If you already have the container locally (in your case the java8), then you can use --skip-pull-image to remove the download
+ OBS: Se você já tem o contêiner localmente (no seu caso, o java8), você pode usar --skip-pull-image para remover o download
 
-If the previous command ran successfully you should now be able to hit the following local endpoint to
-invoke the functions rooted at `http://localhost:3000/study/{topic}?starts=2020-01-02&ends=2020-02-02`.
-It shoud return 404. Now you can explore all endpoints, use the src/test/resources/Study DataLake.postman_collection.json to import a API Rest Collection into Postman.
+Se o comando anterior foi executado com sucesso, agora você deve ser capaz de atingir o seguinte endpoint local para
+invocar as funções com raiz em :
+* `http://localhost:3000/trip` - Criando uma Trip
+* `http://localhost:3000/trip?start=<date>&end=<date>`. - Consultando Uma Trip por data
+* `http://localhost:3000/trip/{Country}`. - Consultando Uma Trip por pais
+* `http://localhost:3000/trip/{Country}?City=<cidade>`. - Consultando Uma Trip por pais e cidade
 
-**SAM CLI** is used to emulate both Lambda and API Gateway locally and uses our `template.yaml` to
-understand how to bootstrap this environment (runtime, where the source code is, etc.) - The
-following excerpt is what the CLI will read in order to initialize an API and its routes:
+
+** SAM CLI ** é usado para emular Lambda e API Gateway localmente e usa nosso `template.yaml` para
+entender como inicializar este ambiente (tempo de execução, onde está o código-fonte, etc.) - O
+O trecho a seguir é o que a CLI lerá para inicializar uma API e suas rotas:
 
 
-## Packaging and deployment
+## Empacotamento e implantação
 
-AWS Lambda Java runtime accepts either a zip file or a standalone JAR file - We use the latter in
-this example. SAM will use `CodeUri` property to know where to look up for both application and
-dependencies:
+O tempo de execução do AWS Lambda Java aceita um arquivo zip ou um arquivo standalone JAR - usamos o último em
+este exemplo. SAM usará a propriedade `CodeUri` para saber onde procurar tanto o aplicativo quanto
+dependências:
 
-Firstly, we need a `S3 bucket` where we can upload our Lambda functions packaged as ZIP before we
-deploy anything - If you don't have a S3 bucket to store code artifacts then this is a good time to
-create one:
+Em primeiro lugar, precisamos de um `S3 bucket` onde podemos fazer o upload de nossas funções Lambda empacotadas como ZIP antes de
+implantar qualquer coisa - Se você não tem um S3 bucket para armazenar artefatos de código, então este é um bom momento para
+crie um:
 
-```bash
+`` `bash
 export BUCKET_NAME=my_cool_new_bucket
 aws s3 mb s3://$BUCKET_NAME
-```
+`` `
 
-Next, run the following command to package our Lambda function to S3:
+Em seguida, execute o seguinte comando para empacotar nossa função Lambda para S3:
 
-```bash
-sam package \
+`` `bash
+pacote sam \
     --template-file template.yaml \
     --output-template-file packaged.yaml \
-    --s3-bucket $BUCKET_NAME
-```
+    --s3-bucket $ BUCKET_NAME
+`` `
 
-Next, the following command will create a Cloudformation Stack and deploy your SAM resources.
+Em seguida, o comando a seguir criará um Cloudformation Stack e implantará seus recursos SAM.
 
-```bash
-sam deploy \
+`` `bash
+sam implantar \
     --template-file packaged.yaml \
-    --stack-name study-datalake \
+    --stack-name <YOUR_STACK> \
     --capabilities CAPABILITY_IAM
-```
+`` `
 
-> **See [Serverless Application Model (SAM) HOWTO Guide](https://github.com/awslabs/serverless-application-model/blob/master/HOWTO.md) for more details in how to get started.**
+> ** Consulte [Guia de HOWTO do modelo de aplicativo sem servidor (SAM)] (https://github.com/awslabs/serverless-application-model/blob/master/HOWTO.md) para obter mais detalhes sobre como começar. **
 
-After deployment is complete you can run the following command to retrieve the API Gateway Endpoint URL:
+Após a conclusão da implantação, você pode executar o seguinte comando para recuperar o URL do endpoint do gateway de API:
 
-```bash
+`` `bash
 aws cloudformation describe-stacks \
     --stack-name sam-orderHandler \
-    --query 'Stacks[].Outputs'
-```
+    --query 'Pilhas []. Saídas'
+`` `
 
-# Appendix
+# Apêndice
 
-## AWS CLI commands
+## Comandos AWS CLI
 
-AWS CLI commands to package, deploy and describe outputs defined within the cloudformation stack:
+Comandos AWS CLI para empacotar, implantar e descrever saídas definidas na pilha de cloudformation:
 
-```bash
-sam package \
+`` `bash
+pacote sam \
     --template-file template.yaml \
     --output-template-file packaged.yaml \
     --s3-bucket REPLACE_THIS_WITH_YOUR_S3_BUCKET_NAME
 
-sam deploy \
+sam implantar \
     --template-file packaged.yaml \
     --stack-name sam-orderHandler \
     --capabilities CAPABILITY_IAM \
-    --parameter-overrides MyParameterSample=MySampleValue
+    --parameter-overrides MyParameterSample = MySampleValue
 
 aws cloudformation describe-stacks \
-    --stack-name sam-orderHandler --query 'Stacks[].Outputs'
-```
-
-## Bringing to the next level
-
-Next, you can use the following resources to know more about beyond hello world samples and how others
-structure their Serverless applications:
-
-* [AWS Serverless Application Repository](https://aws.amazon.com/serverless/serverlessrepo/)
