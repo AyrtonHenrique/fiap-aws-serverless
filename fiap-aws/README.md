@@ -35,21 +35,21 @@ Ele também usa a estrutura ORM do DynamoDBMapper para mapear itens de vigagem(T
 
 Usamos `maven` para instalar nossas dependências e empacotar nosso aplicativo em um arquivo JAR:
 
-bash 
+ 
 `mvn install`	
 
 ### Desenvolvimento local
 
 ** Chamar função localmente por meio do API Gateway local **
-1. Inicie o DynamoDB Local em um contêiner do Docker. `docker run -p 8000: 8000 -v $ (pwd) / local / dynamodb: / data / amazon / dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath / data`
+1. Inicie o DynamoDB Local em um contêiner do Docker. `docker run -p 8000: 8000 -v $ (pwd)/local/dynamodb:/data/amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath/data`
 2. Crie a tabela DynamoDB. `aws dynamodb create-table --table-name trip --attribute-definitions AttributeName=trip,AttributeType=S AttributeName=country,AttributeType=S AttributeName=date,AttributeType=S AttributeName=city,AttributeType=S AttributeName=reason,AttributeType=S --key-schema AttributeName=trip,KeyType=HASH AttributeName=date,KeyType=RANGE --local-secondary-indexes 'IndexName=countryIndex,KeySchema=[{AttributeName=trip,KeyType=HASH},{AttributeName=country,KeyType=RANGE}],Projection={ProjectionType=ALL}' 'IndexName=cityIndex,KeySchema=[{AttributeName=trip,KeyType=HASH},{AttributeName=city,KeyType=RANGE}],Projection={ProjectionType=ALL}' 'IndexName=reasonIndex,KeySchema=[{AttributeName=trip,KeyType=HASH},{AttributeName=reason,KeyType=RANGE}],Projection={ProjectionType=ALL}' --billing-mode PAY_PER_REQUEST  --endpoint-url http://localhost:8000`
 
-Se a tabela já existe, você pode excluir: `aws dynamodb delete-table --table-name trip --endpoint-url http: // localhost: 8000`
+Se a tabela já existe, você pode excluir: `aws dynamodb delete-table --table-name trip --endpoint-url http://localhost:8000`
 
 3. Inicie a API local do SAM.
- - Em um Mac: `sam local start-api --env-vars src / test / resources / test_environment_mac.json`
- - No Windows: `sam local start-api --env-vars src / test / resources / test_environment_windows.json`
- - No Linux: `sam local start-api --env-vars src / test / resources / test_environment_linux.json`
+ - No Mac: `sam local start-api --env-vars src/test/resources/test_environment_mac.json`
+ - No Windows: `sam local start-api --env-vars src/test/resources/test_environment_windows.json`
+ - No Linux: `sam local start-api --env-vars src/test/resources/test_environment_linux.json`
  
  OBS: Se você já tem o contêiner localmente (no seu caso, o java8), você pode usar --skip-pull-image para remover o download
 
@@ -68,46 +68,41 @@ O trecho a seguir é o que a CLI lerá para inicializar uma API e suas rotas:
 
 ## Empacotamento e implantação
 
-O tempo de execução do AWS Lambda Java aceita um arquivo zip ou um arquivo standalone JAR - usamos o último em
+O tempo de execução do AWS Lambda Java aceita um arquivo zip ou um arquivo standalone JAR - usamos o último neste
 este exemplo. SAM usará a propriedade `CodeUri` para saber onde procurar tanto o aplicativo quanto
 dependências:
 
 Em primeiro lugar, precisamos de um `S3 bucket` onde podemos fazer o upload de nossas funções Lambda empacotadas como ZIP antes de
-implantar qualquer coisa - Se você não tem um S3 bucket para armazenar artefatos de código, então este é um bom momento para
-crie um:
+implantar qualquer coisa - Se você não tem um S3 bucket para armazenar artefatos de código, crie um através do comando abaixo:
 
-`` `bash
-export BUCKET_NAME=my_cool_new_bucket
-aws s3 mb s3://$BUCKET_NAME
-`` `
+`export BUCKET_NAME=my_cool_new_bucket`
+`aws s3 mb s3://$BUCKET_NAME`
 
-Em seguida, execute o seguinte comando para empacotar nossa função Lambda para S3:
 
-`` `bash
-pacote sam \
-    --template-file template.yaml \
-    --output-template-file packaged.yaml \
-    --s3-bucket $ BUCKET_NAME
-`` `
+Em seguida, execute o seguinte comando para empacotar as funções Lambda para S3:
+
+`pacote sam \`
+`    --template-file template.yaml \`
+`    --output-template-file packaged.yaml \`
+`    --s3-bucket $ BUCKET_NAME`
+` 
 
 Em seguida, o comando a seguir criará um Cloudformation Stack e implantará seus recursos SAM.
 
-`` `bash
-sam implantar \
-    --template-file packaged.yaml \
-    --stack-name <YOUR_STACK> \
-    --capabilities CAPABILITY_IAM
-`` `
+` sam implantar \`
+`    --template-file packaged.yaml \`
+`    --stack-name <YOUR_STACK> \`
+`    --capabilities CAPABILITY_IAM`
+` 
 
 > ** Consulte [Guia de HOWTO do modelo de aplicativo sem servidor (SAM)] (https://github.com/awslabs/serverless-application-model/blob/master/HOWTO.md) para obter mais detalhes sobre como começar. **
 
 Após a conclusão da implantação, você pode executar o seguinte comando para recuperar o URL do endpoint do gateway de API:
 
-`` `bash
-aws cloudformation describe-stacks \
-    --stack-name sam-orderHandler \
-    --query 'Pilhas []. Saídas'
-`` `
+`aws cloudformation describe-stacks \`
+`    --stack-name sam-orderHandler \`
+`    --query 'Pilhas []. Saídas'`
+` 
 
 # Apêndice
 
@@ -115,16 +110,15 @@ aws cloudformation describe-stacks \
 
 Comandos AWS CLI para empacotar, implantar e descrever saídas definidas na pilha de cloudformation:
 
-`` `bash
-pacote sam \
-    --template-file template.yaml \
-    --output-template-file packaged.yaml \
-    --s3-bucket REPLACE_THIS_WITH_YOUR_S3_BUCKET_NAME
+`pacote sam \`
+`    --template-file template.yaml \`
+`    --output-template-file packaged.yaml \`
+`    --s3-bucket REPLACE_THIS_WITH_YOUR_S3_BUCKET_NAME`
 
-sam implantar \
-    --template-file packaged.yaml \
-    --stack-name sam-orderHandler \
-    --capabilities CAPABILITY_IAM \
-    --parameter-overrides MyParameterSample = MySampleValue
+`sam implantar \`
+`    --template-file packaged.yaml \`
+`    --stack-name sam-orderHandler \`
+`    --capabilities CAPABILITY_IAM \`
+`    --parameter-overrides MyParameterSample = MySampleValue`
 
-aws cloudformation describe-stacks \
+`aws cloudformation describe-stacks \`
