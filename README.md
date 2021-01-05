@@ -10,8 +10,9 @@ Nome dos Integrantes do Grupo:
 
 #Fonte do Projeto
 
-`https://github.com/AyrtonHenrique/fiap-aws-serverless`  
-
+```bash
+https://github.com/AyrtonHenrique/fiap-aws-serverless  
+```
 
 ## Aplicativo AWS SAM para Cadastara Viagens
 
@@ -35,8 +36,9 @@ Ele também usa a estrutura ORM do DynamoDBMapper para mapear itens de vigagem(Tr
 
 Usamos `maven` para instalar nossas dependências e empacotar nosso aplicativo em um arquivo JAR:
 
- 
-`mvn install`	
+```bash 
+mvn install	
+```
 
 ### Desenvolvimento local
 
@@ -75,50 +77,56 @@ dependências:
 Em primeiro lugar, precisamos de um `S3 bucket` onde podemos fazer o upload de nossas funções Lambda empacotadas como ZIP antes de
 implantar qualquer coisa - Se você não tem um S3 bucket para armazenar artefatos de código, crie um através do comando abaixo:
 
-`export BUCKET_NAME=my_cool_new_bucket`
-`aws s3 mb s3://$BUCKET_NAME`
-
+```bash
+export BUCKET_NAME=my_cool_new_bucket
+aws s3 mb s3://$BUCKET_NAME
+```
 
 Em seguida, execute o seguinte comando para empacotar as funções Lambda para S3:
 
-`pacote sam \`
-`    --template-file template.yaml \`
-`    --output-template-file packaged.yaml \`
-`    --s3-bucket $ BUCKET_NAME`
-` 
+```bash
+sam package \
+    --template-file template.yaml \
+    --output-template-file packaged.yaml \
+    --s3-bucket $BUCKET_NAME
+```
 
 Em seguida, o comando a seguir criará um Cloudformation Stack e implantará seus recursos SAM.
 
-` sam implantar \`
-`    --template-file packaged.yaml \`
-`    --stack-name <YOUR_STACK> \`
-`    --capabilities CAPABILITY_IAM`
-` 
+```bash
+sam deploy \
+    --template-file packaged.yaml \
+    --stack-name <Sua-stack> \
+    --capabilities CAPABILITY_IAM
+```
 
-> ** Consulte [Guia de HOWTO do modelo de aplicativo sem servidor (SAM)] (https://github.com/awslabs/serverless-application-model/blob/master/HOWTO.md) para obter mais detalhes sobre como começar. **
+> **Consulte [Guia de HOWTO do modelo de aplicativo sem servidor (SAM)] (https://github.com/awslabs/serverless-application-model/blob/master/HOWTO.md) para obter mais detalhes sobre como começar.**
 
 Após a conclusão da implantação, você pode executar o seguinte comando para recuperar o URL do endpoint do gateway de API:
 
-`aws cloudformation describe-stacks \`
-`    --stack-name sam-orderHandler \`
-`    --query 'Pilhas []. Saídas'`
-` 
-
+```bash
+aws cloudformation describe-stacks \
+    --stack-name sam-orderHandler \
+    --query 'Stacks[].Outputs'
+```
 # Apêndice
 
 ## Comandos AWS CLI
 
 Comandos AWS CLI para empacotar, implantar e descrever saídas definidas na pilha de cloudformation:
 
-`pacote sam \`
-`    --template-file template.yaml \`
-`    --output-template-file packaged.yaml \`
-`    --s3-bucket REPLACE_THIS_WITH_YOUR_S3_BUCKET_NAME`
+```bash
+sam package \
+    --template-file template.yaml \
+    --output-template-file packaged.yaml \
+    --s3-bucket REPLACE_THIS_WITH_YOUR_S3_BUCKET_NAME
 
-`sam implantar \`
-`    --template-file packaged.yaml \`
-`    --stack-name sam-orderHandler \`
-`    --capabilities CAPABILITY_IAM \`
-`    --parameter-overrides MyParameterSample = MySampleValue`
+sam deploy \
+    --template-file packaged.yaml \
+    --stack-name sam-orderHandler \
+    --capabilities CAPABILITY_IAM \
+    --parameter-overrides MyParameterSample=MySampleValue
 
-`aws cloudformation describe-stacks \`
+aws cloudformation describe-stacks \
+    --stack-name sam-orderHandler --query 'Stacks[].Outputs'
+```
